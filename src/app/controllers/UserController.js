@@ -97,7 +97,6 @@ const updateUser = (req, res) => {
 
 const deleteUser = (req, res) => {
     const userId = req.params.id;
-    const token = req.headers;
 
     if(!userId){
         return res.status(200).json({
@@ -131,7 +130,6 @@ const getAllUsers = (req, res) => {
 
 const getDetailsUser = (req, res) => {
     const userId = req.params.id;
-    const token = req.headers;
 
     if(!userId){
         return res.status(200).json({

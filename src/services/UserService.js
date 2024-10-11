@@ -162,7 +162,7 @@ const deleteUser = (id) => {
             .catch((err) => {
                 reject({
                     status: "error",
-                    message: "An error occurred while updating user",
+                    message: "An error occurred while deleting user",
                     error: err,
                 });
             });

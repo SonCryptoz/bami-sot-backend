@@ -23,8 +23,7 @@ const auth = (req, res, next) => {
             });
         }
 
-        const { payload } = user;
-        if (payload?.isAdmin) {
+        if (user?.isAdmin) {
             next();
         } 
         else {
@@ -65,11 +64,11 @@ const authUser = (req, res, next) => {
             });
         }
 
-        const { payload } = user;
-        if (payload?.isAdmin || (!userId || payload?.id === userId)) {
+        if (user?.isAdmin || (!userId || user?.id === userId)) {
             // Nếu có userId, chỉ cho phép truy cập nếu token thuộc về người dùng
             next();
-        } else {
+        } 
+        else {
             return res.status(403).json({
                 message: "Not authorized",
                 status: "Error",

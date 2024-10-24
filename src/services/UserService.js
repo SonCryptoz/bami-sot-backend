@@ -11,7 +11,7 @@ const createUser = (newUser) => {
                 if (checkUser) {
                     return resolve({
                         status: "error",
-                        message: "Email is already in use",
+                        message: "Email đã tồn tại",
                     });
                 }
 
@@ -28,7 +28,7 @@ const createUser = (newUser) => {
                 if (createdUser) {
                     resolve({
                         status: "success",
-                        message: "User created successfully",
+                        message: "Tạo tài khoản thành công",
                         data: createdUser,
                     });
                 }
@@ -36,7 +36,7 @@ const createUser = (newUser) => {
             .catch((err) => {
                 reject({
                     status: "error",
-                    message: "An error occurred while creating user",
+                    message: "Có lỗi xảy ra khi tạo tài khoản",
                     error: err,
                 });
             });
@@ -52,7 +52,7 @@ const loginUser = (userLogin) => {
                 if (!checkUser) {
                     return resolve({
                         status: "error",
-                        message: "Email does not exist",
+                        message: "Email này không tồn tại",
                     });
                 }
 
@@ -61,7 +61,7 @@ const loginUser = (userLogin) => {
                 if (!comparePassword) {
                     return resolve({
                         status: "error",
-                        message: "Username or password is incorrect",
+                        message: "Email hoặc mật khẩu không chính xác",
                     });
                 }
 
@@ -79,7 +79,7 @@ const loginUser = (userLogin) => {
             .then(([access_token, refresh_token]) => {
                 resolve({
                     status: "success",
-                    message: "Login successful",
+                    message: "Đăng nhập thành công",
                     access_token,
                     refresh_token,
                 });
@@ -87,7 +87,7 @@ const loginUser = (userLogin) => {
             .catch((err) => {
                 reject({
                     status: "error",
-                    message: "An error occurred while logging in",
+                    message: "Có lỗi xảy ra khi đăng nhập",
                     error: err,
                 });
             });

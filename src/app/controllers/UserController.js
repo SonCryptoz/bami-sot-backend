@@ -10,19 +10,25 @@ const createUser = (req, res) => {
     if (!name || !email || !password || !confirmPassword || !phone) {
         return res.status(200).json({
             status: 'error',
-            message: 'The input is required',
+            message: 'Vui lòng nhập đầy đủ thông tin',
         });
     } 
     else if (!isCheckEmail) {
         return res.status(200).json({
             status: 'error',
-            message: 'The input must to be an email',
+            message: 'Trường nhập phải là email hợp lệ',
         });
     } 
+    else if(isNaN(Number(phone)) || phone.length < 10 || phone.length > 11) {
+        return res.status(200).json({
+            status: 'error',
+            message: 'Trường nhập phải là số điện thoại',
+        });
+    }
     else if (password !== confirmPassword) {
         return res.status(200).json({
             status: 'error',
-            message: 'The password is not equal to the confirmPassword',
+            message: 'Mật khẩu hoặc mật khẩu xác nhận không trùng khớp',
         });
     }
 
@@ -38,33 +44,42 @@ const createUser = (req, res) => {
 };
 
 const loginUser = (req, res) => {
-    const { name, email, password, confirmPassword, phone } = req.body;
+    const { email, password } = req.body;
 
     const validRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     const isCheckEmail = validRegex.test(email);
 
-    if (!name || !email || !password || !confirmPassword || !phone) {
+    if (!email || !password) {
         return res.status(200).json({
             status: 'error',
-            message: 'The input is required',
+            message: 'Vui lòng nhập đầy đủ thông tin',
         });
     } 
     else if (!isCheckEmail) {
         return res.status(200).json({
             status: 'error',
-            message: 'The input must to be an email',
+            message: 'Trường nhập phải là email',
         });
     } 
-    else if (password !== confirmPassword) {
-        return res.status(200).json({
-            status: 'error',
-            message: 'The password is not equal to the confirmPassword',
-        });
-    }
 
     UserService.loginUser(req.body)
         .then(response => {
-            return res.status(200).json(response);
+            const { refresh_token, access_token, ...userData } = response;
+
+            // Thiết lập cookie chứa refresh_token
+            res.cookie("refresh_token", refresh_token, {
+                httpOnly: true,      // Bảo mật: cookie chỉ được sử dụng bởi server
+                secure: true,        // Chỉ gửi cookie qua HTTPS
+                sameSite: "Strict",  // Không gửi cookie đến các trang khác
+            });
+
+            // Trả về access_token và thông tin người dùng cho client
+            return res.status(200).json({
+                status: 'success',
+                message: 'Đăng nhập thành công',
+                access_token,  // Trả về access_token cho client
+                ...userData,   // Thông tin người dùng khác
+            });
         })
         .catch(e => {
             return res.status(404).json({
@@ -150,24 +165,14 @@ const getDetailsUser = (req, res) => {
 };
 
 const refreshToken = (req, res) => {
-    const authHeader = req.headers.token;
+    const token = req.cookies.refresh_token;
 
-    if (!authHeader) {
+    if (!token) {
         return res.status(401).json({
             message: "No token provided",
             status: "Error",
         });
     }
-
-    const tokenParts = authHeader.split(" ");
-    if (tokenParts[0] !== "Bearer" || !tokenParts[1]) {
-        return res.status(401).json({
-            message: "Invalid token format",
-            status: "Error",
-        });
-    }
-
-    const token = tokenParts[1];
 
     JwtService.refreshTokenJWT(token)
         .then(response => {
@@ -181,4 +186,17 @@ const refreshToken = (req, res) => {
         });
 };
 
-module.exports = { createUser, loginUser, updateUser, deleteUser, getAllUsers, getDetailsUser, refreshToken };
+const logoutUser = (req, res) => {
+    res.clearCookie("refresh_token", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+    });
+
+    return res.status(200).json({
+        status: "OK",
+        message: "Logged out successfully",
+    });
+};
+
+module.exports = { createUser, loginUser, updateUser, deleteUser, getAllUsers, getDetailsUser, refreshToken, logoutUser };

@@ -4,7 +4,7 @@ dotenv.config();
 
 const generalAccessToken = (payload) => {
     const accessToken = jwt.sign(
-        { payload },
+        { ...payload },
         process.env.ACCESS_TOKEN,
         { expiresIn: "30s" }
     );
@@ -13,7 +13,7 @@ const generalAccessToken = (payload) => {
 
 const generalRefreshToken = (payload) => {
     const refreshToken = jwt.sign(
-        { payload },
+        { ...payload },
         process.env.REFRESH_TOKEN,
         { expiresIn: "365d" }
     );
@@ -31,10 +31,9 @@ const refreshTokenJWT = (token) => {
                 });
             }
 
-            const { payload } = user;
             const access_token = generalAccessToken({
-                id: payload?.id,
-                isAdmin: payload?.isAdmin,
+                id: user?.id,
+                isAdmin: user?.isAdmin,
             });
 
             // Token hợp lệ, resolve với kết quả mới

@@ -76,7 +76,7 @@ const loginUser = (userLogin) => {
                     }),
                 ]);
             })
-            .then(([access_token, refresh_token]) => {
+            .then(([access_token, refresh_token]) => { 
                 resolve({
                     status: "success",
                     message: "Đăng nhập thành công",
@@ -112,20 +112,20 @@ const updateUser = (id, data) => {
                 if (!updatedUser) {
                     return resolve({
                         status: "error",
-                        message: "Failed to update user",
+                        message: "Cập nhật người dùng không thành công",
                     });
                 }
 
                 resolve({
                     status: "success",
-                    message: "User updated successfully",
+                    message: "Cập nhật người dùng thành công",
                     data: updatedUser,
                 });
             })
             .catch((err) => {
                 reject({
                     status: "error",
-                    message: "An error occurred while updating user",
+                    message: "Có lỗi xảy ra khi cập nhật người dùng",
                     error: err,
                 });
             });
@@ -139,7 +139,7 @@ const deleteUser = (id) => {
                 if (!checkUser) {
                     return resolve({
                         status: "error",
-                        message: "User does not exist",
+                        message: "Người dùng không tồn tại",
                     });
                 }
 
@@ -150,19 +150,19 @@ const deleteUser = (id) => {
                 if (!deletedUser) {
                     return resolve({
                         status: "error",
-                        message: "Failed to delete user",
+                        message: "Xóa người dùng không thành công",
                     });
                 }
 
                 resolve({
                     status: "success",
-                    message: "User deleted successfully",
+                    message: "Xóa người dùng thành công",
                 });
             })
             .catch((err) => {
                 reject({
                     status: "error",
-                    message: "An error occurred while deleting user",
+                    message: "Có lỗi xảy ra khi xóa người dùng",
                     error: err,
                 });
             });
@@ -176,13 +176,13 @@ const getAllUsers = () => {
                 if (!checkUser) {
                     return resolve({
                         status: "error",
-                        message: "User does not exist",
+                        message: "Người dùng không tồn tại",
                     });
                 }
                 else{
                     return resolve({
                         status: "success",
-                        message: "All users",
+                        message: "Tất cả người dùng",
                         data: checkUser,
                     });
                 }
@@ -190,7 +190,7 @@ const getAllUsers = () => {
             .catch((err) => {
                 reject({
                     status: "error",
-                    message: "An error occurred while rendering all users",
+                    message: "Có lỗi xảy ra khi hiển thị tất cả người dùng",
                     error: err,
                 });
             });
@@ -204,13 +204,13 @@ const getDetailsUser = (id) => {
                 if (!checkUser) {
                     return resolve({
                         status: "error",
-                        message: "User does not exist",
+                        message: "Người dùng không tồn tại",
                     });
                 }
                 else{
                     return resolve({
                         status: "success",
-                        message: "User details",
+                        message: "Chi tiết người dùng",
                         data: checkUser,
                     });
                 }
@@ -218,7 +218,7 @@ const getDetailsUser = (id) => {
             .catch((err) => {
                 reject({
                     status: "error",
-                    message: "An error occurred while rendering user details",
+                    message: "Có lỗi xảy ra khi hiển thị chi tiết người dùng",
                     error: err,
                 });
             });

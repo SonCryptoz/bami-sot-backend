@@ -1,15 +1,15 @@
 const ProductService = require("../../services/ProductService");
 
 const createProduct = (req, res) => {
-    const { name, image, type, price, quantity, description } = req.body;
+    const { name, image, type, quantity, price, discount, description } = req.body;
 
     if (!name || !image || !type || !price || !quantity) {
         return res.status(200).json({
             status: 'error',
-            message: 'The input is required',
+            message: 'Vui lòng điền đầy đủ thông tin',
         });
     } 
-
+ 
     ProductService.createProduct(req.body)
         .then(response => {
             return res.status(200).json(response);
@@ -66,7 +66,7 @@ const deleteProduct = (req, res) => {
 
 const getAllProducts = (req, res) => {
     const { items, pages, sort, filter } = req.query;
-    ProductService.getAllProducts(Number(items || 6), Number(pages || 0), sort, filter)
+    ProductService.getAllProducts(Number(items), Number(pages || 0), sort, filter)
         .then(response => {
             return res.status(200).json(response);
         })

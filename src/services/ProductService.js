@@ -1,15 +1,16 @@
 const Product = require("../app/models/ProductModel");
+const mongoose = require('mongoose');
 
 const createProduct = (newProduct) => {
     return new Promise((resolve, reject) => {
-        const { name, image, type, price, quantity, description } = newProduct;
+        const { name, image, type, quantity, price, discount, description } = newProduct;
 
         Product.findOne({ name: name })
-            .then((checkProduct) => {
+            .then((checkProduct) => { 
                 if (checkProduct) {
                     return resolve({
                         status: "error",
-                        message: "Product name is already in use",
+                        message: "Tên sản phẩm đã được sử dụng!",
                     });
                 }
 
@@ -17,8 +18,9 @@ const createProduct = (newProduct) => {
                     name,
                     image,
                     type,
-                    price,
                     quantity,
+                    price,
+                    discount,
                     description,
                 });
             })
@@ -26,7 +28,7 @@ const createProduct = (newProduct) => {
                 if (createdProduct) {
                     resolve({
                         status: "success",
-                        message: "Product created successfully",
+                        message: "Tạo sản phẩm thành công!",
                         data: createdProduct,
                     });
                 }
@@ -34,7 +36,7 @@ const createProduct = (newProduct) => {
             .catch((err) => {
                 reject({
                     status: "error",
-                    message: "An error occurred while creating product",
+                    message: "Có lỗi xảy ra khi tạo sản phẩm!",
                     error: err,
                 });
             });
@@ -48,31 +50,31 @@ const updateProduct = (id, data) => {
                 if (!checkProduct) {
                     return resolve({
                         status: "error",
-                        message: "Product does not exist",
+                        message: "Sản phẩm không tồn tại",
                     });
                 }
 
                 // Cập nhật sản phẩm và trả về phiên bản mới
                 return Product.findByIdAndUpdate(id, data, { new: true });
             })
-            .then((updatedProduct) => {
+            .then((updatedProduct) => { 
                 if (!updatedProduct) {
                     return resolve({
                         status: "error",
-                        message: "Failed to update product",
+                        message: "Cập nhật sản phẩm không thành công",
                     });
                 }
 
                 resolve({
                     status: "success",
-                    message: "Product updated successfully",
+                    message: "Cập nhật sản phẩm thành công",
                     data: updatedProduct,
                 });
             })
             .catch((err) => {
                 reject({
                     status: "error",
-                    message: "An error occurred while updating product",
+                    message: "Đã xảy ra lỗi khi cập nhật sản phẩm",
                     error: err,
                 });
             });
@@ -86,7 +88,7 @@ const deleteProduct = (id) => {
                 if (!checkProduct) {
                     return resolve({
                         status: "error",
-                        message: "Product does not exist",
+                        message: "Sản phẩm không tồn tại!",
                     });
                 }
 
@@ -97,19 +99,19 @@ const deleteProduct = (id) => {
                 if (!deletedProduct) {
                     return resolve({
                         status: "error",
-                        message: "Failed to delete product",
+                        message: "Xóa sản phẩm không thành công!",
                     });
                 }
 
                 resolve({
                     status: "success",
-                    message: "Product deleted successfully",
+                    message: "Xóa sản phẩm thành công",
                 });
             })
             .catch((err) => {
                 reject({
                     status: "error",
-                    message: "An error occurred while deleting product",
+                    message: "Có lỗi xảy ra khi xóa sản phẩm!",
                     error: err,
                 });
             });
@@ -118,52 +120,49 @@ const deleteProduct = (id) => {
 
 const getAllProducts = (items, pages, sort, filter) => {
     return new Promise((resolve, reject) => {
-        let totalProducts; 
-        Product.countDocuments()
-            .then((products) => {
-                totalProducts = products;
-                if(sort){
-                    const objectSort = {};
-                    objectSort[sort[1]] = sort[0]; 
-                    return Product.find().limit(items).skip(pages * items).sort(objectSort);
-                }
-                if(filter){
-                    const label = filter[0];
-                    return Product.find({
-                        [label]: {
-                            "$regex": filter[1],
-                        },
-                    }).limit(items).skip(pages * items);
-                }
-                return Product.find().limit(items).skip(pages * items);
-            })
-            .then((checkProduct) => {
-                if (!checkProduct) {
+        // Tạo truy vấn tìm kiếm sản phẩm dựa trên bộ lọc
+        const query = filter ? { [filter[0]]: { "$regex": filter[1], "$options": "i" } } : {};
+
+        // Tạo đối tượng sắp xếp nếu có
+        const sortOption = sort ? { [sort[1]]: sort[0] } : {};
+
+        Product.countDocuments(query)
+            .then((totalProducts) => {
+                if (totalProducts === 0) {
                     return resolve({
                         status: "error",
-                        message: "Product does not exist",
+                        message: "Không có sản phẩm nào phù hợp với bộ lọc",
+                        total: 0,
+                        currentPage: 0,
+                        totalPages: 0,
                     });
                 }
-                else{
-                    return resolve({
-                        status: "success",
-                        message: "All products",
-                        data: checkProduct,
-                        total: totalProducts,
-                        currentPage: pages + 1,
-                        totalPages: Math.ceil(totalProducts / items),
+
+                return Product.find(query)
+                    .limit(items)
+                    .skip(pages * items)
+                    .sort(sortOption)
+                    .then((products) => {
+                        return resolve({
+                            status: "success",
+                            message: "Tất cả sản phẩm",
+                            data: products,
+                            total: totalProducts,
+                            currentPage: pages + 1,
+                            totalPages: Math.ceil(totalProducts / items),
+                        });
                     });
-                }
             })
             .catch((err) => {
                 reject({
                     status: "error",
-                    message: "An error occurred while rendering all products",
+                    message: "Có lỗi xảy ra khi hiển thị dữ liệu sản phẩm",
                     error: err,
                 });
             });
     });
 };
+
 
 const getDetailsProduct = (id) => {
     return new Promise((resolve, reject) => {
@@ -172,13 +171,13 @@ const getDetailsProduct = (id) => {
                 if (!checkProduct) {
                     return resolve({
                         status: "error",
-                        message: "Product does not exist",
+                        message: "Sản phẩm không tồn tại",
                     });
                 }
                 else{
                     return resolve({
                         status: "success",
-                        message: "Product details",
+                        message: "Chi tiết sản phẩm",
                         data: checkProduct,
                     });
                 }
@@ -186,7 +185,7 @@ const getDetailsProduct = (id) => {
             .catch((err) => {
                 reject({
                     status: "error",
-                    message: "An error occurred while rendering product details",
+                    message: "Có lỗi xảy ra khi hiển thị dữ liệu chi tiết sản phẩm",
                     error: err,
                 });
             });

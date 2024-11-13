@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
         phone: {type: Number, required: true},
         address: {type: String},
         avatar: {type: String},
-        access_token: {type: String, required: false},
+        access_token: {type: String, required: false}, 
         refresh_token: {type: String, required: false},
     },
     {

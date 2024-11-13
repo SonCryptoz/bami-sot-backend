@@ -143,7 +143,7 @@ const getAllUsers = (req, res) => {
         });
 };
 
-const getDetailsUser = (req, res) => {
+const getDetailsUser = (req, res) => { 
     const userId = req.params.id;
 
     if(!userId){

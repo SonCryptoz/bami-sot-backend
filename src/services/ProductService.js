@@ -118,6 +118,32 @@ const deleteProduct = (id) => {
     });
 };
 
+const deleteManyProduct = (ids) => {
+    return new Promise((resolve, reject) => {
+        Product.deleteMany({_id: ids})
+            .then((deletedProduct) => {
+                if (!deletedProduct) {
+                    return resolve({
+                        status: "error",
+                        message: "Xóa sản phẩm không thành công!",
+                    });
+                }
+
+                resolve({
+                    status: "success",
+                    message: "Xóa sản phẩm thành công",
+                });
+            })
+            .catch((err) => {
+                reject({
+                    status: "error",
+                    message: "Có lỗi xảy ra khi xóa sản phẩm!",
+                    error: err,
+                });
+            });
+    });
+};
+
 const getAllProducts = (items, pages, sort, filter) => {
     return new Promise((resolve, reject) => {
         // Tạo truy vấn tìm kiếm sản phẩm dựa trên bộ lọc
@@ -192,4 +218,4 @@ const getDetailsProduct = (id) => {
     });
 };
 
-module.exports = { createProduct, updateProduct, deleteProduct, getAllProducts ,getDetailsProduct };
+module.exports = { createProduct, updateProduct, deleteProduct, deleteManyProduct, getAllProducts ,getDetailsProduct };

@@ -64,6 +64,27 @@ const deleteProduct = (req, res) => {
         });
 };
 
+const deleteManyProduct = (req, res) => {
+    const productIds = req.body.ids;
+
+    if(!productIds){
+        return res.status(200).json({
+            status: 'error',
+            message: 'The productIDs is required',
+        });
+    }
+
+    ProductService.deleteManyProduct(productIds)
+        .then(response => {
+            return res.status(200).json(response);
+        })
+        .catch(e => {
+            return res.status(404).json({
+                message: e,
+            });
+        });
+};
+
 const getAllProducts = (req, res) => {
     const { items, pages, sort, filter } = req.query;
     ProductService.getAllProducts(Number(items), Number(pages || 0), sort, filter)
@@ -98,4 +119,4 @@ const getDetailsProduct = (req, res) => {
         });
 };
 
-module.exports = { createProduct, updateProduct, deleteProduct, getAllProducts ,getDetailsProduct };
+module.exports = { createProduct, updateProduct, deleteProduct, deleteManyProduct, getAllProducts ,getDetailsProduct };

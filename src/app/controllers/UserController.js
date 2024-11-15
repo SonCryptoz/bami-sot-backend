@@ -131,6 +131,27 @@ const deleteUser = (req, res) => {
         });
 };
 
+const deleteManyUser = (req, res) => {
+    const userIds = req.body.ids;
+
+    if(!userIds){
+        return res.status(200).json({
+            status: 'error',
+            message: 'The userIDs is required',
+        });
+    }
+
+    UserService.deleteManyUser(userIds)
+        .then(response => {
+            return res.status(200).json(response);
+        })
+        .catch(e => {
+            return res.status(404).json({
+                message: e,
+            });
+        });
+};
+
 const getAllUsers = (req, res) => {
     UserService.getAllUsers()
         .then(response => {
@@ -199,4 +220,13 @@ const logoutUser = (req, res) => {
     });
 };
 
-module.exports = { createUser, loginUser, updateUser, deleteUser, getAllUsers, getDetailsUser, refreshToken, logoutUser };
+module.exports = {  createUser, 
+                    loginUser, 
+                    updateUser, 
+                    deleteUser, 
+                    deleteManyUser, 
+                    getAllUsers, 
+                    getDetailsUser, 
+                    refreshToken, 
+                    logoutUser 
+                };

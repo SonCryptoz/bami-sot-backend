@@ -143,11 +143,60 @@ const deleteUser = (id) => {
                     });
                 }
 
+                // Kiểm tra nếu là tài khoản admin
+                if (checkUser.isAdmin) {
+                    return resolve({
+                        status: "error",
+                        message: "Không thể xóa tài khoản admin",
+                    });
+                }
+
                 // Xóa người dùng
                 return User.findByIdAndDelete(id);
             })
             .then((deletedUser) => {
                 if (!deletedUser) {
+                    return resolve({
+                        status: "error",
+                        message: "Xóa người dùng không thành công",
+                    });
+                }
+
+                resolve({
+                    status: "success",
+                    message: "Xóa người dùng thành công",
+                });
+            })
+            .catch((err) => {
+                reject({
+                    status: "error",
+                    message: "Có lỗi xảy ra khi xóa người dùng",
+                    error: err,
+                });
+            });
+    });
+};
+
+const deleteManyUser = (ids) => {
+    return new Promise((resolve, reject) => {
+        // Tìm tất cả các tài khoản theo danh sách IDs
+        User.find({ _id: { $in: ids } })
+            .then((users) => {
+                // Kiểm tra nếu có tài khoản admin trong danh sách
+                const hasAdmin = users.some((user) => user.isAdmin);
+
+                if (hasAdmin) {
+                    return resolve({
+                        status: "error",
+                        message: "Không thể xóa tài khoản admin",
+                    });
+                }
+
+                // Nếu không có tài khoản admin, thực hiện xóa
+                return User.deleteMany({ _id: { $in: ids } });
+            })
+            .then((deletedUser) => {
+                if (!deletedUser || deletedUser.deletedCount === 0) {
                     return resolve({
                         status: "error",
                         message: "Xóa người dùng không thành công",
@@ -225,4 +274,4 @@ const getDetailsUser = (id) => {
     });
 };
 
-module.exports = { createUser, loginUser, updateUser, deleteUser, getAllUsers, getDetailsUser };
+module.exports = { createUser, loginUser, updateUser, deleteUser, deleteManyUser, getAllUsers, getDetailsUser };

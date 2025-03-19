@@ -189,6 +189,22 @@ const getAllProducts = (items, pages, sort, filter) => {
     });
 };
 
+const getAllTypes = async () => {
+    try {
+        const allTypes = await Product.distinct("type");
+        return {
+            status: "success",
+            message: "Tất cả loại sản phẩm",
+            data: allTypes,
+        };
+    } catch (err) {
+        return {
+            status: "error",
+            message: "Có lỗi xảy ra khi hiển thị loại sản phẩm",
+            error: err,
+        };
+    }
+};
 
 const getDetailsProduct = (id) => {
     return new Promise((resolve, reject) => {
@@ -218,4 +234,4 @@ const getDetailsProduct = (id) => {
     });
 };
 
-module.exports = { createProduct, updateProduct, deleteProduct, deleteManyProduct, getAllProducts ,getDetailsProduct };
+module.exports = { createProduct, updateProduct, deleteProduct, deleteManyProduct, getAllProducts, getAllTypes, getDetailsProduct };

@@ -98,6 +98,18 @@ const getAllProducts = (req, res) => {
         });
 };
 
+const getAllTypes = (req, res) => {
+    ProductService.getAllTypes()
+        .then(response => {
+            return res.status(200).json(response);
+        })
+        .catch(e => {
+            return res.status(404).json({
+                message: e,
+            });
+        });
+};
+
 const getDetailsProduct = (req, res) => {
     const productId = req.params.id;
 
@@ -119,4 +131,4 @@ const getDetailsProduct = (req, res) => {
         });
 };
 
-module.exports = { createProduct, updateProduct, deleteProduct, deleteManyProduct, getAllProducts ,getDetailsProduct };
+module.exports = { createProduct, updateProduct, deleteProduct, deleteManyProduct, getAllProducts, getAllTypes, getDetailsProduct };
